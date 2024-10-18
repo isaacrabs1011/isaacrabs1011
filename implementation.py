@@ -22,3 +22,6 @@ class Roster:
 
 myPlaylist = ["Sing about me I'm dying of thirst", "Homecoming", "E.Coli", "Independent Films", "DUCKWORTH"]
 play = Playlist(myPlaylist)
+
+thh tht edgaoigbaogi
+'gege'
