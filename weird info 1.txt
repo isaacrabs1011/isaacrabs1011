@@ -1,0 +1,15 @@
+curl -X POST "https://accounts.spotify.com/api/token" \
+     -H "Content-Type: application/x-www-form-urlencoded" \
+     -d "grant_type=client_credentials&client_id=66db3e8cc3f348ab824c283deecaabb8&client_secret=e331f2f209e84a50ab31b98aa71059cc"
+
+
+{"access_token":"BQCFwlyenCfwl9uvmrCF_icMK2P6Ywm1hGS9_slc8QwPha3iWBTv0Xq_lyLf2EroKnrAfkD7NlFV1zT2rmsUo736-k5hWdUWwwAdMErKJHFZgNCXHC8",
+"token_type":"Bearer",
+"expires_in":3600}
+
+
+https://open.spotify.com/artist/2YZyLoL8N0Wb9xBt1NhZWg?si=J3gbTLHtS-yFzdvTeN9xDg
+
+curl "https://api.spotify.com/v1/artists/2YZyLoL8N0Wb9xBt1NhZWg?si=J3gbTLHtS-yFzdvTeN9xDg" \
+     -H "Authorization: Bearer  BQCFwlyenCfwl9uvmrCF_icMK2P6Ywm1hGS9_slc8QwPha3iWBTv0Xq_lyLf2EroKnrAfkD7NlFV1zT2rmsUo736-k5hWdUWwwAdMErKJHFZgNCXHC8"
+
