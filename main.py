@@ -47,13 +47,13 @@ class Player:
             print(f"{count+1}: {item}")
 
 
-# class Roster:
-#     def __init__(self, roster):
-#         self.startingOrder = roster
-#         self.rankedOrder = []
-# 
-#     def rankOrder(self):
-#         ...
+class Roster:
+    def __init__(self, roster):
+        self.startingOrder = roster
+        self.rankedOrder = []
+
+    def rankOrder(self):
+        ...
 
 
 class Game:
