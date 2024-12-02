@@ -1,14 +1,14 @@
-# class Playlist:
-#     def __init__(self, songs: list, title):
-#         self.songs = songs
-#         self.title = title
-#         self.numberOfSongs = len(songs)
-# 
-#     def getSongs(self):
-#         return self.songs
-# 
-#     def getTitle(self):
-#         return self.title
+import time
+import random
+
+
+class Prompts:
+    def __init__(self):
+        self.prompts = []
+
+    def getPrompt(self, name):
+        prompt = input(f"{name}, give me a prompt: ")
+        self.prompts.append(prompt)
 
 
 class Player:
@@ -17,11 +17,12 @@ class Player:
         self.colour = ''
         self.shape = ''
         self.roster = []
+        self.rounds = 0
         
     def setupPlayer(self):
         self.setName()
-        self.setColour()
-        self.setShape()
+        # self.setColour()
+        # self.setShape()
 
     def getName(self):
         return self.name
@@ -45,15 +46,14 @@ class Player:
         count = 0
         for item in self.roster:
             print(f"{count+1}: {item}")
-
-
-class Roster:
-    def __init__(self, roster):
-        self.startingOrder = roster
-        self.rankedOrder = []
-
-    def rankOrder(self):
-        ...
+#
+# class Roster:
+#     def __init__(self, roster):
+#         self.startingOrder = roster
+#         self.rankedOrder = []
+#
+#     def rankOrder(self):
+#         ...
 
 
 class Game:
@@ -62,17 +62,23 @@ class Game:
         self.players = []
         self.NoPlayers = 0
         self.playlist = []
+        self.score = 0
+        self.prompts = Prompts()
 
     def setNumberOfPlayers(self):
         self.NoPlayers = int(input("How many players are playing? "))
 
     def setPlaylist(self):
-        # When fully working would use the Spotify API
-        # In the meantime I'll just ask the user to enter some songs
 
-        for i in range(3): #number needs to be divisible by the number of players so everyone has an equal number of songs
-            song = input("name a song: ")
-            self.playlist.append(song)
+        # giving stats + attribute to an initial list of songs
+        # Artist, Genre
+        self.playlist = [
+            "Noid",
+            "Bennie and The Jets",
+            "Mojo Pin",
+            "Daughter of a Cop",
+            "Reincarnated"
+        ]
 
     def displayPlaylist(self):
         count = 1
@@ -91,10 +97,13 @@ class Game:
             self.players.append(player)
             print('\n')
 
+        for item in self.players:
+            self.prompts.getPrompt(item.name)
+
         Game.setPlaylist(self)
         Game.draft(self)
 
-    def draft(self): #my questionnaire will decide what kind of drafting this will be, but we'll use an NBA style for now
+    def draft(self):
 
         currentPlayer = 0
 
@@ -121,8 +130,14 @@ class Game:
         print('\n')
         print("Here is everyone's roster: ")
 
+        for item in self.players:
+            print(f"{item.name}:")
+            item.displayRoster()
+            print('\n')
 
-
+    def vote(self):
+        prompt = random.choice(self.prompts.prompts)
+        players = random.choice(self.players) * 2
 
     def getNoPlayers(self):
         return self.NoPlayers
@@ -130,27 +145,8 @@ class Game:
     def getPlaylist(self):
         return self.playlist
 
+# main
 
-
-    def scoring(self):
-        ...
-
-    # def checkNames(self, nom):
-    #     for n in self.players:
-    #         if nom == n.getName():
-    #             return False
-    #
-    #     else:
-    #         return True
-    #
-    # def checkColours(self):
-    #     ...
-    #
-    # def checkShapes(self):
-    #     ...
-
-
-#main
 
 startGame = input("Do you want to start a new game? (y/n) ")
 startGame = startGame.lower()
@@ -158,4 +154,4 @@ startGame = startGame.lower()
 if startGame == 'y':
     game = Game()
     game.setup()
-
+    
