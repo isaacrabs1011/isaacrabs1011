@@ -46,6 +46,14 @@ class Player:
         count = 0
         for item in self.roster:
             print(f"{count+1}: {item}")
+
+    def chooseSong(self):
+        print(f"{self.name}, choose one of your songs: \n")
+        self.displayRoster()
+
+        songNumber = int(input(f"Pick a number, 1-{len(self.roster)} "))
+        song = self.roster[songNumber - 1]
+        return song
 #
 # class Roster:
 #     def __init__(self, roster):
@@ -61,8 +69,8 @@ class Game:
     def __init__(self):
         self.players = []
         self.NoPlayers = 0
+        self.noRounds = 0
         self.playlist = []
-        self.score = 0
         self.prompts = Prompts()
 
     def setNumberOfPlayers(self):
@@ -90,6 +98,7 @@ class Game:
     def setup(self):
         Game.setNumberOfPlayers(self)
         noP = Game.getNoPlayers(self)
+        self.noRounds = noP * 2
 
         for i in range(noP):
             player = Player()
@@ -102,6 +111,7 @@ class Game:
 
         Game.setPlaylist(self)
         Game.draft(self)
+        Game.vote(self)
 
     def draft(self):
 
@@ -136,8 +146,32 @@ class Game:
             print('\n')
 
     def vote(self):
-        prompt = random.choice(self.prompts.prompts)
-        players = random.choice(self.players) * 2
+        finished = False
+        count1 = 0
+        count2 = 1
+        while not finished:
+            p1 = self.players[count1]
+            p2 = self.players[count2]
+
+            restOfPlayers = []
+            for item in self.players:
+                if item != p1 and item != p2:
+                    restOfPlayers.append(item)
+
+            prompt = random.choice(self.prompts.prompts)
+
+            print(f"It's {p1.name} vs {p2.name} \n")
+            print("Your prompt is: \n")
+            print(prompt, '\n')
+
+            p1song = p1.chooseSong()
+            p2song = p2.chooseSong()
+
+            for thing in restOfPlayers:
+                
+
+
+
 
     def getNoPlayers(self):
         return self.NoPlayers
@@ -154,5 +188,3 @@ startGame = startGame.lower()
 if startGame == 'y':
     game = Game()
     game.setup()
-
-
