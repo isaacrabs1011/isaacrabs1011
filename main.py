@@ -177,7 +177,7 @@ class Game:
                 print(f"2. {p2song}")
                 print("\n")
 
-                vote = int(input("Choose 1 or 2"))
+                vote = int(input("Choose 1 or 2 "))
                 if vote == 1:
                     p1vote += 1
 
@@ -209,7 +209,31 @@ class Game:
                 print("\n")
 
             elif p1vote == p2vote:
-                print()
+                print(f"{p2.name} and {p1.name} drew with each other with {p1vote} votes. ")
+                print("\n")
+
+                p1.score += p1vote
+                p2.score += p2vote
+
+                print(f"{p1.name}'s score: {p1.score}")
+                print(f"{p2.name}'s score: {p2.score}")
+                print("\n")
+
+            p1.rounds += 1
+            p2.rounds += 1
+
+            if count2 == len(self.players) - 1:
+                count2 = 0
+
+            elif count1 == len(self.players) - 1:
+                count1 = 0
+
+            else:
+                count1 += 1
+                count2 += 1
+
+            if self.players[self.NoPlayers - 1].rounds == 2:
+                finished = True
 
 
     def getNoPlayers(self):
