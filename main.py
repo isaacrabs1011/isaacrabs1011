@@ -18,6 +18,7 @@ class Player:
         self.shape = ''
         self.roster = []
         self.rounds = 0
+        self.score = 0
         
     def setupPlayer(self):
         self.setName()
@@ -166,11 +167,49 @@ class Game:
 
             p1song = p1.chooseSong()
             p2song = p2.chooseSong()
+            p1vote = 0
+            p2vote = 0
 
             for thing in restOfPlayers:
-                
+                print("\n")
+                print(f"{thing.name} which of the following songs fits:\n{prompt}\nthe best?")
+                print(f"1. {p1song} ")
+                print(f"2. {p2song}")
+                print("\n")
 
+                vote = int(input("Choose 1 or 2"))
+                if vote == 1:
+                    p1vote += 1
 
+                elif vote == 2:
+                    p2vote += 1
+
+            for i in range(3):
+                print(".")
+                print("..")
+                print("...")
+
+            print("The votes are in.")
+            if p1vote >= p2vote:
+                print(f"{p1.name} won with {p1vote} votes to {p2.name}'s {p2vote} votes. ")
+                print("\n")
+
+                p1.score += p1vote
+                print(f"{p1.name}'s score: {p1.score}")
+                print(f"{p2.name}'s score: {p2.score}")
+                print("\n")
+
+            elif p2vote >= p1vote:
+                print(f"{p2.name} won with {p2vote} votes to {p1.name}'s {p1vote} votes. ")
+                print("\n")
+
+                p2.score += p2vote
+                print(f"{p2.name}'s score: {p2.score}")
+                print(f"{p1.name}'s score: {p1.score}")
+                print("\n")
+
+            elif p1vote == p2vote:
+                print()
 
 
     def getNoPlayers(self):
