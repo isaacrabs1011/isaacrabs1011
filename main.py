@@ -47,6 +47,7 @@ class Player:
         count = 0
         for item in self.roster:
             print(f"{count+1}: {item}")
+            count += 1
 
     def chooseSong(self):
         print(f"{self.name}, choose one of your songs: \n")
@@ -86,7 +87,12 @@ class Game:
             "Bennie and The Jets",
             "Mojo Pin",
             "Daughter of a Cop",
-            "Reincarnated"
+            "Reincarnated",
+            "Happy",
+            "Feather",
+            "Mercury",
+            "06 Dreamin",
+            "Nothing's Promised"
         ]
 
     def displayPlaylist(self):
@@ -170,14 +176,14 @@ class Game:
             p1vote = 0
             p2vote = 0
 
-            for thing in restOfPlayers:
-                print("\n")
-                print(f"{thing.name} which of the following songs fits:\n{prompt}\nthe best?")
-                print(f"1. {p1song} ")
-                print(f"2. {p2song}")
-                print("\n")
+            print("\n")
+            print("Choose one of these songs:")
+            print(f"1. {p1song} ")
+            print(f"2. {p2song}")
+            print("\n")
 
-                vote = int(input("Choose 1 or 2 "))
+            for thing in restOfPlayers:
+                vote = int(input(f"{thing.name} pick a song, choose 1 or 2: "))
                 if vote == 1:
                     p1vote += 1
 
@@ -222,15 +228,15 @@ class Game:
             p1.rounds += 1
             p2.rounds += 1
 
-            if count2 == len(self.players) - 1:
-                count2 = 0
+            if count2 + 2 > len(self.players)-1:
+                count2 = (count2 + 2) - len(self.players)-1
 
-            elif count1 == len(self.players) - 1:
-                count1 = 0
+            elif count1 + 2 > len(self.players)-1:
+                count1 = (count1 + 2) - len(self.players)-1
 
             else:
-                count1 += 1
-                count2 += 1
+                count1 += 2
+                count2 += 2
 
             if self.players[self.NoPlayers - 1].rounds == 2:
                 finished = True
