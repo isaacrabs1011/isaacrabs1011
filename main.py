@@ -250,21 +250,30 @@ class Game:
             else:
                 finished = True
 
+    def decideWinner(self):
+        print("Now we need to determine the winner.")
+        self.displayLeaderboard()
 
+    def displayLeaderboard(self):
+        players = []
+        for player in self.players:
+            if len(players) == 0:
+                players.append(player)
 
+            else:
+                count = 0
+                while count <= len(players) - 1:
+                    if player.score > players[count].score:
+                        players.insert(count, player)
 
-            # if count2 + 2 > len(self.players)-1:
-            #     count2 = (count2 + 2) - len(self.players)-1
-            #
-            # elif count1 + 2 > len(self.players)-1:
-            #     count1 = (count1 + 2) - (len(self.players)-1)
-            #
-            # else:
-            #     count1 += 2
-            #     count2 += 2
-            #
-            # if self.players[self.NoPlayers - 1].rounds == 2:
-            #     finished = True
+                    elif count == len(players)-1:
+                        players.append(player)
+
+                    else:
+                        count += 1
+
+        for i in range(self.NoPlayers):
+            print(f"{i+1}. {players[i].name}: {players[i].score}")
 
 
     def getNoPlayers(self):
