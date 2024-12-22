@@ -228,18 +228,28 @@ class Game:
             p1.rounds += 1
             p2.rounds += 1
 
-            if count2 + 2 > len(self.players)-1:
-                count2 = (count2 + 2) - len(self.players)-1
+            count1 += 2
+            count2 += 2
 
-            elif count1 + 2 > len(self.players)-1:
-                count1 = (count1 + 2) - len(self.players)-1
+            if count2 > (self.NoPlayers-1):
+                count2 = count2 - (self.NoPlayers)
 
-            else:
-                count1 += 2
-                count2 += 2
+            elif count1 > (self.NoPlayers-1):
+                count1 = count1 - (self.NoPlayers)
 
-            if self.players[self.NoPlayers - 1].rounds == 2:
-                finished = True
+
+            # if count2 + 2 > len(self.players)-1:
+            #     count2 = (count2 + 2) - len(self.players)-1
+            #
+            # elif count1 + 2 > len(self.players)-1:
+            #     count1 = (count1 + 2) - (len(self.players)-1)
+            #
+            # else:
+            #     count1 += 2
+            #     count2 += 2
+            #
+            # if self.players[self.NoPlayers - 1].rounds == 2:
+            #     finished = True
 
 
     def getNoPlayers(self):
