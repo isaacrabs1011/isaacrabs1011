@@ -237,6 +237,21 @@ class Game:
             elif count1 > (self.NoPlayers-1):
                 count1 = count1 - (self.NoPlayers)
 
+            complete = []
+
+            for player in self.players:
+                if player.rounds == 2:
+                    complete.append(True)
+                else:
+                    complete.append(False)
+
+            if False in complete:
+                pass
+            else:
+                finished = True
+
+
+
 
             # if count2 + 2 > len(self.players)-1:
             #     count2 = (count2 + 2) - len(self.players)-1
