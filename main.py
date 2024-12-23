@@ -116,9 +116,10 @@ class Game:
         for item in self.players:
             self.prompts.getPrompt(item.name)
 
-        Game.setPlaylist(self)
-        Game.draft(self)
-        Game.vote(self)
+        self.setPlaylist()
+        self.draft()
+        self.vote()
+        self.decideWinner()
 
     def draft(self):
 
@@ -262,15 +263,16 @@ class Game:
 
             else:
                 count = 0
-                while count <= len(players) - 1:
+                while count < len(players) and player not in players:
                     if player.score > players[count].score:
                         players.insert(count, player)
-
-                    elif count == len(players)-1:
-                        players.append(player)
-
                     else:
                         count += 1
+
+                if player not in players:
+                    players.append(player)
+
+
 
         for i in range(self.NoPlayers):
             print(f"{i+1}. {players[i].name}: {players[i].score}")
