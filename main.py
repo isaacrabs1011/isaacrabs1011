@@ -1,17 +1,31 @@
-import time
 import random
+import numpy as np
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 
 
 class Prompts:
+    """
+    A class for all the prompts
+    """
     def __init__(self):
         self.prompts = []
 
     def getPrompt(self, name):
+        """
+        :param name: The name of the person who is making the prompt.
+        :return: Appends the user's prompt to the list of prompts.
+        Gives a confirmation message as well.
+
+        """
         prompt = input(f"{name}, give me a prompt: ")
         self.prompts.append(prompt)
 
 
 class Player:
+    """
+    A class to store information about a player.
+    """
     def __init__(self):
         self.name = ''
         self.colour = ''
@@ -21,18 +35,12 @@ class Player:
         self.score = 0
         
     def setupPlayer(self):
+        """
+        Sets up the player's information.
+        """
         self.setName()
         # self.setColour()
         # self.setShape()
-
-    def getName(self):
-        return self.name
-
-    def getColour(self):
-        return self.colour
-
-    def getShape(self):
-        return self.shape
     
     def setName(self):
         self.name = input("Enter your name... ")
@@ -44,30 +52,31 @@ class Player:
         self.shape = input("Choose a shape... ")
 
     def displayRoster(self):
+        """
+        Displays the user's roster at that moment in time.
+        """
         count = 0
         for item in self.roster:
             print(f"{count+1}: {item}")
             count += 1
 
     def chooseSong(self):
+        """
+        User chooses one of the songs from their roster.
+        :return: The song they want to choose for the 'battle'.
+        """
         print(f"{self.name}, choose one of your songs: \n")
         self.displayRoster()
 
         songNumber = int(input(f"Pick a number, 1-{len(self.roster)} "))
         song = self.roster[songNumber - 1]
         return song
-#
-# class Roster:
-#     def __init__(self, roster):
-#         self.startingOrder = roster
-#         self.rankedOrder = []
-#
-#     def rankOrder(self):
-#         ...
 
 
 class Game:
-
+    """
+    A class that structures out the game.
+    """
     def __init__(self):
         self.players = []
         self.NoPlayers = 0
@@ -79,9 +88,9 @@ class Game:
         self.NoPlayers = int(input("How many players are playing? "))
 
     def setPlaylist(self):
-
-        # giving stats + attribute to an initial list of songs
-        # Artist, Genre
+        """
+        This playlist will be replaced by the user's spotify playlist. This is where I'd integrate the Spotify API
+        """
         self.playlist = [
             "Noid",
             "Bennie and The Jets",
@@ -96,6 +105,9 @@ class Game:
         ]
 
     def displayPlaylist(self):
+        """
+        Just shows everyone what the current playlist looks like.
+        """
         count = 1
         for item in self.playlist:
 
@@ -103,6 +115,10 @@ class Game:
             count += 1
 
     def setup(self):
+        """
+        This is the method that links everything together.
+        Playlist -> Draft -> Vote -> Winner
+        """
         Game.setNumberOfPlayers(self)
         noP = Game.getNoPlayers(self)
         self.noRounds = noP * 2
@@ -122,7 +138,9 @@ class Game:
         self.decideWinner()
 
     def draft(self):
-
+        """
+        This is where each player drafts songs to their roster.
+        """
         currentPlayer = 0
 
         while len(self.playlist) > 0:
@@ -154,6 +172,9 @@ class Game:
             print('\n')
 
     def vote(self):
+        """
+        This is used for the players to vote for their favourite songs.
+        """
         finished = False
         count1 = 0
         count2 = 1
@@ -233,10 +254,10 @@ class Game:
             count2 += 2
 
             if count2 > (self.NoPlayers-1):
-                count2 = count2 - (self.NoPlayers)
+                count2 = count2 - self.NoPlayers
 
             elif count1 > (self.NoPlayers-1):
-                count1 = count1 - (self.NoPlayers)
+                count1 = count1 - self.NoPlayers
 
             complete = []
 
@@ -272,11 +293,8 @@ class Game:
                 if player not in players:
                     players.append(player)
 
-
-
         for i in range(self.NoPlayers):
             print(f"{i+1}. {players[i].name}: {players[i].score}")
-
 
     def getNoPlayers(self):
         return self.NoPlayers
