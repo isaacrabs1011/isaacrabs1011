@@ -111,9 +111,11 @@ class Game:
         SPOTIPY_CLIENT_SECRET = '8466dcc0498847eabf4cc3b83b6a0742'
         # SPOTIPY_REDIRECT_URI = 'http://localhost.callback'
 
+        playlistID = input("Go to your Spotify profile and choose one of your playlists. \nClick on the 3 dots and press share then Copy Link. \nPaste it here: ")
+
         auth_manager = SpotifyClientCredentials(SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET)
         sp = spotipy.Spotify(auth_manager=auth_manager)
-        playlist = sp.playlist('https://open.spotify.com/playlist/6GhmUa261lqAmWsod8A6vu?si=4d354f348327435b')
+        playlist = sp.playlist(playlistID)
         for item in playlist['tracks']['items']:
             track = item['track']
             self.playlist.append(track['artists'][0]['name'] + ' - ' + track['name'])
