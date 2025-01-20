@@ -85,6 +85,7 @@ class Player:
 
         songNumber = int(input(f"Pick a number, 1-{len(self.roster)} "))
         song = self.roster[songNumber - 1]
+        self.roster.remove(song)
         return song
 
 
@@ -104,7 +105,7 @@ class Game:
 
     def setNumberOfRounds(self):
         recommendedRounds = len(self.playlist) // self.NoPlayers
-        self.noRounds = int(input("How many rounds do you want everyone to play? I recommend {recommendedRounds}. "))
+        self.noRounds = int(input(f"How many rounds do you want everyone to play? I recommend {recommendedRounds}. "))
 
     def setPlaylist(self):
         """
