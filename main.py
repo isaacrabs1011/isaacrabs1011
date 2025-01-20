@@ -102,6 +102,10 @@ class Game:
     def setNumberOfPlayers(self):
         self.NoPlayers = int(input("How many players are playing? "))
 
+    def setNumberOfRounds(self):
+        recommendedRounds = len(self.playlist) // self.NoPlayers
+        self.noRounds = int(input("How many rounds do you want everyone to play? I recommend {recommendedRounds}. "))
+
     def setPlaylist(self):
         """
         This playlist will be replaced by the user's spotify playlist. This is where I'd integrate the Spotify API
@@ -109,7 +113,7 @@ class Game:
         self.playlist = []
         SPOTIPY_CLIENT_ID = '5143755320f74541986016c151d8b004'
         SPOTIPY_CLIENT_SECRET = '8466dcc0498847eabf4cc3b83b6a0742'
-        # SPOTIPY_REDIRECT_URI = 'http://localhost.callback'
+        SPOTIPY_REDIRECT_URI = 'http://localhost.callback'
 
         playlistID = input("Go to your Spotify profile and choose one of your playlists. \nClick on the 3 dots and press share then Copy Link. \nPaste it here: ")
 
@@ -151,6 +155,7 @@ class Game:
             self.prompts.getPrompt(item.name)
 
         self.setPlaylist()
+        self.setNumberOfRounds()
         self.draft()
         self.vote()
         self.decideWinner()
@@ -280,7 +285,7 @@ class Game:
             complete = []
 
             for player in self.players:
-                if player.rounds == 2:
+                if player.rounds == self.noRounds:
                     complete.append(True)
                 else:
                     complete.append(False)
