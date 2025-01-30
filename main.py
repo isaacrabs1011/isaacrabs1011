@@ -99,6 +99,20 @@ class Game:
         self.noRounds = 0
         self.playlist = []
         self.prompts = Prompts()
+        self.songsPerPerson = 0
+
+    def setNoSongsPerPerson(self):
+        print(f"Your playlist has {len(self.playlist)} songs.")
+        print(f"There are {len(self.players)} players")
+        print(f"I recommend playing with 10 songs per person, but the maximum you can play with is {len(self.playlist) // len(self.players)}")
+        self.songsPerPerson = int(input("How many songs do you want each person to have in their roster? "))
+
+        nOsongsInPlaylist = self.songsPerPerson * len(self.players)
+        while len(self.playlist) > nOsongsInPlaylist:
+            self.playlist.pop(len(self.playlist)-1)
+
+        print("This is what your playlist looks like now:")
+        self.displayPlaylist()
 
     def setNumberOfPlayers(self):
         self.NoPlayers = int(input("How many players are playing? "))
@@ -156,6 +170,7 @@ class Game:
             self.prompts.getPrompt(item.name)
 
         self.setPlaylist()
+        self.setNoSongsPerPerson()
         self.setNumberOfRounds()
         self.draft()
         self.vote()
