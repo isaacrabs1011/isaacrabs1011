@@ -1,7 +1,8 @@
 import random
-import numpy as np
-import matplotlib as mpl
-import matplotlib.pyplot as plt
+import time
+# import numpy as np
+# import matplotlib as mpl
+# import matplotlib.pyplot as plt
 #
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
@@ -16,7 +17,6 @@ from spotipy.oauth2 import SpotifyClientCredentials
 # for item in playlist['tracks']['items']:
 #     track = item['track']
 #     print(track['artists'][0]['name'] + ' - ' + track['name'])
-
 
 
 class Prompts:
@@ -111,7 +111,9 @@ class Game:
         while len(self.playlist) > nOsongsInPlaylist:
             self.playlist.pop(len(self.playlist)-1)
 
+        print("\n")
         print("This is what your playlist looks like now:")
+        time.sleep(1)
         self.displayPlaylist()
 
     def setNumberOfPlayers(self):
@@ -139,6 +141,8 @@ class Game:
             track = item['track']
             self.playlist.append(track['artists'][0]['name'] + ' - ' + track['name'])
 
+        print("\n")
+
     def displayPlaylist(self):
         """
         Just shows everyone what the current playlist looks like.
@@ -148,8 +152,6 @@ class Game:
 
             print(f'{count}: {item}')
             count += 1
-
-
 
     def setup(self):
         """
@@ -169,12 +171,11 @@ class Game:
         for item in self.players:
             self.prompts.getPrompt(item.name)
 
+        print("\n")
+
         self.setPlaylist()
         self.setNoSongsPerPerson()
         self.setNumberOfRounds()
-        self.draft()
-        self.vote()
-        self.decideWinner()
 
     def draft(self):
         """
@@ -187,6 +188,7 @@ class Game:
             print(f"\n")
             print(f"It's {playerName}'s turn to pick a song.")
             print("\n")
+            time.sleep(1)
             self.displayPlaylist()
             print("\n")
 
@@ -251,10 +253,7 @@ class Game:
                 elif vote == 2:
                     p2vote += 1
 
-            for i in range(3):
-                print(".")
-                print("..")
-                print("...")
+            time.sleep(1)
 
             print("The votes are in.")
             if p1vote >= p2vote:
@@ -342,8 +341,6 @@ class Game:
         return self.playlist
 
 
-
-
 # main
 
 
@@ -353,3 +350,6 @@ startGame = startGame.lower()
 if startGame == 'y':
     game = Game()
     game.setup()
+    game.draft()
+    game.vote()
+    game.decideWinner()
