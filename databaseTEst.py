@@ -3,9 +3,6 @@ import sqlite3
 conn = sqlite3.connect('database.sqlite')
 cursor = conn.cursor()
 
-playername = "bosh"
-playercolour = "red"
-playershape = "square"
 
 create_player_table = """
 CREATE TABLE IF NOT EXISTS player (
@@ -16,14 +13,18 @@ CREATE TABLE IF NOT EXISTS player (
 );
 """
 
+playername = "bosh"
+playercolour = "red"
+playershape = "square"
+
 insertQuery = """
 INSERT INTO player (name, colour, shape)
-VALUES (playername, playercolour, playershape);
+VALUES (?, ?, ?);
 """
 
 
 cursor.execute(create_player_table)
-cursor.execute(insertQuery)
+cursor.execute(insertQuery, (playername, playercolour, playershape))
 conn.commit()
 conn.close()
 
