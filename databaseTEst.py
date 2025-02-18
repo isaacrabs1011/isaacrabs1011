@@ -6,7 +6,8 @@ cursor = conn.cursor()
 
 create_game_table = """
 CREATE TABLE IF NOT EXISTS game (
-    gameID INTEGER PRIMARY KEY AUTOINCREMENT
+    gameID INTEGER PRIMARY KEY AUTOINCREMENT,
+    gameName TEXT
 );
 """
 
@@ -22,17 +23,20 @@ CREATE TABLE IF NOT EXISTS players (
 cursor.execute(create_game_table)
 cursor.execute(create_players_table)
 
-insertQueryGame = "INSERT INTO game DEFAULT VALUES;"
-cursor.execute(insertQueryGame)
+gameNumber = 2
+gameName = "Hello"
 
-gameNumber = cursor.lastrowid
+insertQueryGame = ("INSERT INTO game "
+                   "VALUES (?)")
+cursor.execute(insertQueryGame, "2")
+
+
 
 insertQueryPlayers = """
 INSERT INTO players (gameId, playerName, finalScore)
 VALUES (?, ?, ?)
 """
 
-gameNumber = 1
 players = [(gameNumber, "Jonathan", 5),
            (gameNumber, "Nathan", 3),
            (gameNumber, "Jeffrey", 7)
