@@ -5,13 +5,13 @@ cursor = conn.cursor()
 
 
 create_game_table = """
-CREATE TABLE game (
+CREATE TABLE IF NOT EXISTS game (
     gameID INTEGER PRIMARY KEY AUTOINCREMENT
 );
 """
 
 create_players_table = """
-CREATE TABLE players (
+CREATE TABLE IF NOT EXISTS players (
     playerId INTEGER PRIMARY KEY AUTOINCREMENT,
     gameId INTEGER NOT NULL,
     playerName TEXT NOT NULL,
@@ -19,28 +19,27 @@ CREATE TABLE players (
     FOREIGN KEY (gameId) REFERENCES game(gameID)
 );
 """
+cursor.execute(create_game_table)
+cursor.execute(create_players_table)
 
-insertQueryGame = """
-INSERT INTO game (gameId)
-VALUES (?);
-"""
+insertQueryGame = "INSERT INTO game DEFAULT VALUES;"
+cursor.execute(insertQueryGame)
+
+gameNumber = cursor.lastrowid
 
 insertQueryPlayers = """
-INSERT INTO players (playerID, gameId, playerName, finalScore)
-VALUES (?)
+INSERT INTO players (gameId, playerName, finalScore)
+VALUES (?, ?, ?)
 """
 
 gameNumber = 1
-players = [(1, gameNumber, "Jonathan", 5),
-           (2, gameNumber, "Nathan", 3),
-           (3, gameNumber, "Jeffrey", 7)
+players = [(gameNumber, "Jonathan", 5),
+           (gameNumber, "Nathan", 3),
+           (gameNumber, "Jeffrey", 7)
            ]
 
 
-cursor.execute(create_players_table)
-cursor.execute(create_game_table)
-cursor.execute(insertQueryGame, 1)
-cursor.execute(insertQueryPlayers, players[0])
+cursor.executemany(insertQueryPlayers, players)
 
 conn.commit()
 conn.close()
