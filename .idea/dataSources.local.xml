@@ -14,7 +14,7 @@
         </introspection-scope>
       </schema-mapping>
     </data-source>
-    <data-source name="database" uuid="aabf2442-df74-4e33-893d-227eda698dd5">
+    <data-source name="database" uuid="a7e335af-0f95-4f19-b2cb-e6293497dda8">
       <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="SQLITE" />
       <auth-provider>no-auth</auth-provider>
       <schema-mapping />

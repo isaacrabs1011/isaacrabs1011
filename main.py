@@ -318,7 +318,7 @@ class Game:
             if count2 > (self.NoPlayers-1):
                 count2 = count2 - self.NoPlayers
 
-            elif count1 > (self.NoPlayers-1):
+            if count1 > (self.NoPlayers-1):
                 count1 = count1 - self.NoPlayers
 
             complete = []
