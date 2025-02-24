@@ -43,16 +43,26 @@ class Player:
         self.rounds = 0
         self.score = 0
         
-    def setupPlayer(self):
+    def setupPlayer(self, players, playerId):
         """
         Sets up the player's information.
         """
-        self.setName()
+        self.setName(players, playerId)
         # self.setColour()
         # self.setShape()
-    
-    def setName(self):
-        self.name = input("Enter your name... ")
+
+    def validateName(self, players):
+        if self.name not in players:
+            return True
+
+        else:
+            print("This name is already taken")
+            return False
+
+    def setName(self, players, playerID):
+        self.name = input(f"Player {playerID}, enter your name... ")
+        # while not self.validateName(players):
+        #     self.name = input(f"Player {playerID}, enter your name... ")
         
     def setColour(self):
         self.colour = input("Choose a colour... ")
@@ -158,7 +168,8 @@ class Game:
 
         for i in range(noP):
             player = Player()
-            player.setupPlayer()
+            players = self.players
+            player.setupPlayer(players, i+1)
             self.players.append(player)
             print('\n')
 
