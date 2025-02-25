@@ -32,6 +32,17 @@ CREATE TABLE IF NOT EXISTS players (
 """
 cursor.execute(create_players_table)
 
+create_prompts_table = """
+CREATE TABLE IF NOT EXISTS prompts(
+    promptID INTEGER PRIMARY KEY AUTOINCREMENT,
+    gameId INTEGER NOT NULL,
+    promptText TEXT NOT NULL,
+    FOREIGN KEY (gameId) REFERENCES game(gameID)
+)
+"""
+cursor.execute(create_prompts_table)
+
+
 class Prompts:
     """
     A class for all the prompts
@@ -372,6 +383,14 @@ class Game:
 
         return players
 
+    def turnPromptsSaveable(self, gameID):
+        prompts = []
+        for prompt in self.prompts.prompts:
+            prompts.append((gameID, prompt))
+
+        return prompts
+
+
     def saveGame(self):
         doYouSave = input("Do you want to save this game? (y/n) ")
         doYouSave = doYouSave.lower()
@@ -380,6 +399,7 @@ class Game:
             print("The following will be saved:"
                   "1. Each player's name"
                   "2. Each player's score"
+                  "3. The prompts of the game"
                   )
 
             noPlayers = self.NoPlayers
@@ -398,6 +418,15 @@ class Game:
             players = self.turnPlayersSaveable(gameId)
 
             cursor.executemany(insertQueryPlayers, players)
+
+            insertQueryPrompts = """
+                        INSERT INTO prompts (gameId, promptText)
+                        VALUES (?, ?)
+                        """
+
+            prompts = self.turnPromptsSaveable(gameId)
+
+            cursor.executemany(insertQueryPrompts, prompts)
 
             conn.commit()
             conn.close()
