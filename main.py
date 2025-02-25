@@ -90,9 +90,23 @@ class Player:
             return False
 
     def setName(self, players, playerID):
-        self.name = input(f"Player {playerID}, enter your name... ")
-        # while not self.validateName(players):
-        #     self.name = input(f"Player {playerID}, enter your name... ")
+        chooseExistingPlayer = input("Do you want to choose an existing player (y/n): ")
+        chooseExistingPlayer = chooseExistingPlayer.lower()
+
+        if chooseExistingPlayer == 'y':
+            targetName = input("What name do you want to look for? ")
+            selectStatement = """
+            SELECT playerId, playerName FROM players WHERE playerName LIKE (?);
+            """
+            cursor.execute(selectStatement, targetName)
+
+            playerId, self.name = cursor.fetchone()
+
+        else:
+            self.name = input(f"Player {playerID}, enter your name... ")
+
+
+
         
     def setColour(self):
         self.colour = input("Choose a colour... ")

@@ -45,7 +45,7 @@ players = [(gameId, "Jonathan", 5),
            (gameId, "Jeffrey", 7)
            ]
 
-
+()
 cursor.executemany(insertQueryPlayers, players)
 
 conn.commit()
