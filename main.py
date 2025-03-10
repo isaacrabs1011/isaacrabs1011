@@ -14,8 +14,7 @@ cursor = conn.cursor()
 
 create_game_table = """
 CREATE TABLE IF NOT EXISTS game (
-    gameID INTEGER PRIMARY KEY AUTOINCREMENT,
-    numberOfPlayers INTEGER
+    gameID INTEGER PRIMARY KEY AUTOINCREMENT
 );
 """
 
@@ -24,10 +23,7 @@ cursor.execute(create_game_table)
 create_players_table = """
 CREATE TABLE IF NOT EXISTS players (
     playerId INTEGER PRIMARY KEY AUTOINCREMENT,
-    gameId INTEGER NOT NULL,
-    playerName TEXT NOT NULL,
-    finalScore INTEGER NOT NULL,
-    FOREIGN KEY (gameId) REFERENCES game (gameID)
+    playerName TEXT NOT NULL
 );
 """
 cursor.execute(create_players_table)
@@ -42,6 +38,17 @@ CREATE TABLE IF NOT EXISTS prompts(
 """
 cursor.execute(create_prompts_table)
 
+create_playerGame_table = """
+CREATE TABLE IF NOT EXISTS playerGame(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    gameID INTEGER NOT NULL,
+    playerID INTEGER NOT NULL,
+    playerScore INTEGER NOT NULL,
+    FOREIGN KEY (gameID) REFERENCES game(gameID),
+    FOREIGN KEY (playerID) REFERENCES players(playerId)
+)
+"""
+cursor.execute(create_playerGame_table)
 
 class Prompts:
     """
@@ -67,6 +74,7 @@ class Player:
     """
     def __init__(self):
         self.name = ''
+        self.playerId = None
         self.colour = ''
         self.shape = ''
         self.roster = []
@@ -90,20 +98,40 @@ class Player:
             return False
 
     def setName(self, players, playerID):
-        chooseExistingPlayer = input("Do you want to choose an existing player (y/n): ")
+        chooseExistingPlayer = input("New player. Do you want to choose an existing player (y/n): ")
         chooseExistingPlayer = chooseExistingPlayer.lower()
 
         if chooseExistingPlayer == 'y':
             targetName = input("What name do you want to look for? ")
+            find_statement = '''
+            SELECT * FROM players
+            WHERE playerName LIKE (?)
+            '''
+            cursor.execute(find_statement, (targetName,))
+            result = cursor.fetchall()
+
+            while len(result) == 0:
+                print(f"There is no one in the database called {targetName}")
+                targetName = input("What name do you want to look for? ")
+                find_statement = '''
+                            SELECT * FROM players
+                            WHERE playerName LIKE (?)
+                            '''
+                cursor.execute(find_statement, (targetName,))
+                result = cursor.fetchall()
+
             selectStatement = """
             SELECT playerId, playerName FROM players WHERE playerName LIKE (?);
             """
-            cursor.execute(selectStatement, targetName)
+            cursor.execute(selectStatement, (targetName,))
 
-            playerId, self.name = cursor.fetchone()
+            self.playerId, self.name = cursor.fetchone()
+            print(f"Welcome back {self.name}!")
+
 
         else:
             self.name = input(f"Player {playerID}, enter your name... ")
+            self.playerId = None
 
 
 
