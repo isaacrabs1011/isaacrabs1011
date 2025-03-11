@@ -14,7 +14,8 @@ cursor = conn.cursor()
 
 create_game_table = """
 CREATE TABLE IF NOT EXISTS game (
-    gameID INTEGER PRIMARY KEY AUTOINCREMENT
+    gameID INTEGER PRIMARY KEY AUTOINCREMENT,
+    numberOfPlayers INTEGER NOT NULL
 );
 """
 
@@ -74,6 +75,7 @@ class Player:
     """
     def __init__(self):
         self.name = ''
+        self.playerExists = False
         self.playerId = None
         self.colour = ''
         self.shape = ''
@@ -102,6 +104,7 @@ class Player:
         chooseExistingPlayer = chooseExistingPlayer.lower()
 
         if chooseExistingPlayer == 'y':
+            self.playerExists = True
             targetName = input("What name do you want to look for? ")
             find_statement = '''
             SELECT * FROM players
@@ -128,13 +131,9 @@ class Player:
             self.playerId, self.name = cursor.fetchone()
             print(f"Welcome back {self.name}!")
 
-
         else:
             self.name = input(f"Player {playerID}, enter your name... ")
             self.playerId = None
-
-
-
         
     def setColour(self):
         self.colour = input("Choose a colour... ")
@@ -417,13 +416,13 @@ class Game:
     def getPlaylist(self):
         return self.playlist
 
-    def turnPlayersSaveable(self, gameID):
-
-        players = []
-        for item in self.players:
-            players.append((gameID, item.name, item.score))
-
-        return players
+    # def turnPlayersSaveable(self, gameID):
+    #
+    #     players = []
+    #     for item in self.players:
+    #         players.append((gameID, item.name, item.score))
+    #
+    #     return players
 
     def turnPromptsSaveable(self, gameID):
         prompts = []
@@ -453,13 +452,21 @@ class Game:
             gameId = cursor.lastrowid
 
             insertQueryPlayers = """
-            INSERT INTO players (gameId, playerName, finalScore)
-            VALUES (?, ?, ?)
+                        INSERT INTO players (playerName)
+                        VALUES (?)
             """
 
-            players = self.turnPlayersSaveable(gameId)
+            insertQueryPlayerGame = """
+                                    INSERT INTO playerGame(gameID, playerID, playerScore)
+                                    VALUES (?,?,?)
+                        """
 
-            cursor.executemany(insertQueryPlayers, players)
+            for player in self.players:
+                if player.playerExists == False:
+                    cursor.execute(insertQueryPlayers, (player.name,) )
+                    player.playerId = cursor.lastrowid
+
+                cursor.execute(insertQueryPlayerGame, (gameId, player.playerId, player.score,))
 
             insertQueryPrompts = """
                         INSERT INTO prompts (gameId, promptText)

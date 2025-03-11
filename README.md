@@ -7,4 +7,6 @@ Notes about the game:
 
 Process of Full Game so far (As of Monday 23rd December 2024):
 
-1. 
+IMPORTANT NOTES:
+
+- If there's a draw of points, both players get the points.
