@@ -51,6 +51,18 @@ CREATE TABLE IF NOT EXISTS playerGame(
 """
 cursor.execute(create_playerGame_table)
 
+create_playerGameRoster_table = """
+CREATE TABLE IF NOT EXISTS playerGameRoster(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+        gameID INTEGER NOT NULL,
+        playerID INTEGER NOT NULL,
+        playerSong TEXT NOT NULL,
+        FOREIGN KEY (gameID) REFERENCES game(gameID),
+        FOREIGN KEY (playerID) REFERENCES players(playerId)
+)
+"""
+cursor.execute(create_playerGameRoster_table)
+
 class Prompts:
     """
     A class for all the prompts
@@ -431,7 +443,6 @@ class Game:
 
         return prompts
 
-
     def saveGame(self):
         doYouSave = input("Do you want to save this game? (y/n) ")
         doYouSave = doYouSave.lower()
@@ -457,9 +468,14 @@ class Game:
             """
 
             insertQueryPlayerGame = """
-                                    INSERT INTO playerGame(gameID, playerID, playerScore)
-                                    VALUES (?,?,?)
-                        """
+                        INSERT INTO playerGame(gameID, playerID, playerScore)
+                        VALUES (?,?,?)
+            """
+
+            insertQueryPlayerGameRoster = """
+                        INSERT INTO playerGameRoster(gameID, playerID, playerSong)  
+                        VALUES (?,?,?)          
+            """
 
             for player in self.players:
                 if player.playerExists == False:
@@ -467,6 +483,8 @@ class Game:
                     player.playerId = cursor.lastrowid
 
                 cursor.execute(insertQueryPlayerGame, (gameId, player.playerId, player.score,))
+                for song in player.roster:
+                    cursor.execute(insertQueryPlayerGameRoster, (gameId, player.playerId, song,))
 
             insertQueryPrompts = """
                         INSERT INTO prompts (gameId, promptText)
