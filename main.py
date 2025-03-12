@@ -15,7 +15,9 @@ cursor = conn.cursor()
 create_game_table = """
 CREATE TABLE IF NOT EXISTS game (
     gameID INTEGER PRIMARY KEY AUTOINCREMENT,
-    numberOfPlayers INTEGER NOT NULL
+    numberOfPlayers INTEGER NOT NULL,
+    playlistLink TEXT NOT NULL,
+    rounds INTEGER NOT NULL
 );
 """
 
@@ -91,6 +93,7 @@ class Player:
         self.playerId = None
         self.colour = ''
         self.shape = ''
+        self.initialRoster = []
         self.roster = []
         self.rounds = 0
         self.score = 0
@@ -185,6 +188,7 @@ class Game:
         self.NoPlayers = 0
         self.noRounds = 0
         self.playlist = []
+        self.playlistLink = ""
         self.prompts = Prompts()
         self.songsPerPerson = 0
 
@@ -220,7 +224,7 @@ class Game:
         SPOTIPY_REDIRECT_URI = 'http://localhost.callback'
 
         playlistID = input("Go to your Spotify profile and choose one of your playlists. \nClick on the 3 dots and press share then Copy Link. \nPaste it here: ")
-
+        self.playlistLink = playlistID
         auth_manager = SpotifyClientCredentials(SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET)
         sp = spotipy.Spotify(auth_manager=auth_manager)
         playlist = sp.playlist(playlistID)
@@ -284,6 +288,7 @@ class Game:
             song = self.playlist[songNumber-1]
 
             self.players[currentPlayer].roster.append(song)
+            self.players[currentPlayer].initialRoster.append(song)
             self.playlist.remove(song)
 
             if currentPlayer == self.NoPlayers - 1:
@@ -456,9 +461,9 @@ class Game:
 
             noPlayers = self.NoPlayers
 
-            insertQueryGame = ("INSERT INTO game (numberOfPlayers)"
-                               "VALUES  (?)")
-            cursor.execute(insertQueryGame, (noPlayers,))
+            insertQueryGame = ("INSERT INTO game (numberOfPlayers, playlistLink, rounds)"
+                               "VALUES  (?, ?, ?)")
+            cursor.execute(insertQueryGame, (noPlayers, self.playlistLink, self.noRounds,))
 
             gameId = cursor.lastrowid
 
@@ -483,7 +488,7 @@ class Game:
                     player.playerId = cursor.lastrowid
 
                 cursor.execute(insertQueryPlayerGame, (gameId, player.playerId, player.score,))
-                for song in player.roster:
+                for song in player.initialRoster:
                     cursor.execute(insertQueryPlayerGameRoster, (gameId, player.playerId, song,))
 
             insertQueryPrompts = """
