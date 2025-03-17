@@ -9,15 +9,13 @@ from spotipy.oauth2 import SpotifyClientCredentials
 
 import sqlite3
 
-conn = sqlite3.connect('database.sqlite')
+conn = sqlite3.connect('heheheh.sqlite')
 cursor = conn.cursor()
 
 create_game_table = """
 CREATE TABLE IF NOT EXISTS game (
     gameID INTEGER PRIMARY KEY AUTOINCREMENT,
-    numberOfPlayers INTEGER NOT NULL,
-    playlistLink TEXT NOT NULL,
-    rounds INTEGER NOT NULL
+    numberOfPlayers INTEGER NOT NULL
 );
 """
 
@@ -53,22 +51,12 @@ CREATE TABLE IF NOT EXISTS playerGame(
 """
 cursor.execute(create_playerGame_table)
 
-create_playerGameRoster_table = """
-CREATE TABLE IF NOT EXISTS playerGameRoster(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-        gameID INTEGER NOT NULL,
-        playerID INTEGER NOT NULL,
-        playerSong TEXT NOT NULL,
-        FOREIGN KEY (gameID) REFERENCES game(gameID),
-        FOREIGN KEY (playerID) REFERENCES players(playerId)
-)
-"""
-cursor.execute(create_playerGameRoster_table)
 
 class Prompts:
     """
     A class for all the prompts
     """
+
     def __init__(self):
         self.prompts = []
 
@@ -87,13 +75,13 @@ class Player:
     """
     A class to store information about a player.
     """
+
     def __init__(self):
         self.name = ''
         self.playerExists = False
         self.playerId = None
         self.colour = ''
         self.shape = ''
-        self.initialRoster = []
         self.roster = []
         self.rounds = 0
         self.score = 0
@@ -162,7 +150,7 @@ class Player:
         """
         count = 0
         for item in self.roster:
-            print(f"{count+1}: {item}")
+            print(f"{count + 1}: {item}")
             count += 1
 
     def chooseSong(self):
@@ -183,34 +171,37 @@ class Game:
     """
     A class that structures out the game.
     """
+
     def __init__(self):
         self.players = []
         self.NoPlayers = 0
         self.noRounds = 0
-        self.roundsPlayed = 0
         self.playlist = []
-        self.playlistLink = ""
         self.prompts = Prompts()
         self.songsPerPerson = 0
 
     def setNoSongsPerPerson(self):
         print(f"Your playlist has {len(self.playlist)} songs.")
         print(f"There are {len(self.players)} players")
-        print(f"I recommend playing with 10 songs per person, but the maximum you can play with is {len(self.playlist) // len(self.players)}")
+        print(
+            f"I recommend playing with 10 songs per person, but the maximum you can play with is {len(self.playlist) // len(self.players)}")
         self.songsPerPerson = int(input("How many songs do you want each person to have in their roster? "))
 
         nOsongsInPlaylist = self.songsPerPerson * len(self.players)
         while len(self.playlist) > nOsongsInPlaylist:
-            self.playlist.pop(len(self.playlist)-1)
+            self.playlist.pop(len(self.playlist) - 1)
 
         print("\n")
         print("This is what your playlist looks like now:")
         time.sleep(1)
         self.displayPlaylist()
-        self.noRounds = len(self.playlist) // self.NoPlayers
 
     def setNumberOfPlayers(self):
         self.NoPlayers = int(input("How many players are playing? "))
+
+    def setNumberOfRounds(self):
+        recommendedRounds = len(self.playlist) // self.NoPlayers
+        self.noRounds = int(input(f"How many rounds do you want everyone to play? I recommend {recommendedRounds}. "))
 
     def setPlaylist(self):
         """
@@ -221,8 +212,9 @@ class Game:
         SPOTIPY_CLIENT_SECRET = '8466dcc0498847eabf4cc3b83b6a0742'
         SPOTIPY_REDIRECT_URI = 'http://localhost.callback'
 
-        playlistID = input("Go to your Spotify profile and choose one of your playlists. \nClick on the 3 dots and press share then Copy Link. \nPaste it here: ")
-        self.playlistLink = playlistID
+        playlistID = input(
+            "Go to your Spotify profile and choose one of your playlists. \nClick on the 3 dots and press share then Copy Link. \nPaste it here: ")
+
         auth_manager = SpotifyClientCredentials(SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET)
         sp = spotipy.Spotify(auth_manager=auth_manager)
         playlist = sp.playlist(playlistID)
@@ -238,7 +230,6 @@ class Game:
         """
         count = 1
         for item in self.playlist:
-
             print(f'{count}: {item}')
             count += 1
 
@@ -254,7 +245,7 @@ class Game:
         for i in range(noP):
             player = Player()
             players = self.players
-            player.setupPlayer(players, i+1)
+            player.setupPlayer(players, i + 1)
             self.players.append(player)
             print('\n')
 
@@ -265,6 +256,7 @@ class Game:
 
         self.setPlaylist()
         self.setNoSongsPerPerson()
+        self.setNumberOfRounds()
 
     def draft(self):
         """
@@ -282,10 +274,9 @@ class Game:
             print("\n")
 
             songNumber = int(input(f"Pick a number 1-{len(self.playlist)} "))
-            song = self.playlist[songNumber-1]
+            song = self.playlist[songNumber - 1]
 
             self.players[currentPlayer].roster.append(song)
-            self.players[currentPlayer].initialRoster.append(song)
             self.playlist.remove(song)
 
             if currentPlayer == self.NoPlayers - 1:
@@ -381,16 +372,23 @@ class Game:
             count1 += 2
             count2 += 2
 
-            if count2 > (self.NoPlayers-1):
+            if count2 > (self.NoPlayers - 1):
                 count2 = count2 - self.NoPlayers
 
-            if count1 > (self.NoPlayers-1):
+            if count1 > (self.NoPlayers - 1):
                 count1 = count1 - self.NoPlayers
 
             complete = []
 
-            self.roundsPlayed += 1
-            if self.roundsPlayed == self.noRounds:
+            for player in self.players:
+                if player.rounds == self.noRounds:
+                    complete.append(True)
+                else:
+                    complete.append(False)
+
+            if False in complete:
+                pass
+            else:
                 finished = True
 
     def decideWinner(self):
@@ -415,7 +413,7 @@ class Game:
                     players.append(player)
 
         for i in range(self.NoPlayers):
-            print(f"{i+1}. {players[i].name}: {players[i].score}")
+            print(f"{i + 1}. {players[i].name}: {players[i].score}")
 
     def getNoPlayers(self):
         return self.NoPlayers
@@ -451,9 +449,9 @@ class Game:
 
             noPlayers = self.NoPlayers
 
-            insertQueryGame = ("INSERT INTO game (numberOfPlayers, playlistLink, rounds)"
-                               "VALUES  (?, ?, ?)")
-            cursor.execute(insertQueryGame, (noPlayers, self.playlistLink, self.noRounds,))
+            insertQueryGame = ("INSERT INTO game (numberOfPlayers)"
+                               "VALUES  (?)")
+            cursor.execute(insertQueryGame, (noPlayers,))
 
             gameId = cursor.lastrowid
 
@@ -463,23 +461,16 @@ class Game:
             """
 
             insertQueryPlayerGame = """
-                        INSERT INTO playerGame(gameID, playerID, playerScore)
-                        VALUES (?,?,?)
-            """
-
-            insertQueryPlayerGameRoster = """
-                        INSERT INTO playerGameRoster(gameID, playerID, playerSong)  
-                        VALUES (?,?,?)          
-            """
+                                    INSERT INTO playerGame(gameID, playerID, playerScore)
+                                    VALUES (?,?,?)
+                        """
 
             for player in self.players:
                 if player.playerExists == False:
-                    cursor.execute(insertQueryPlayers, (player.name,) )
+                    cursor.execute(insertQueryPlayers, (player.name,))
                     player.playerId = cursor.lastrowid
 
                 cursor.execute(insertQueryPlayerGame, (gameId, player.playerId, player.score,))
-                for song in player.initialRoster:
-                    cursor.execute(insertQueryPlayerGameRoster, (gameId, player.playerId, song,))
 
             insertQueryPrompts = """
                         INSERT INTO prompts (gameId, promptText)
@@ -492,7 +483,6 @@ class Game:
 
             conn.commit()
             conn.close()
-
 
 
 # main
