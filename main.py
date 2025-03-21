@@ -70,14 +70,18 @@ cursor.execute(create_playerGameRoster_table)
 # Class which will store + manage all the prompts.
 class Prompts:
     def __init__(self):
-        self.prompts = []
-        # Parameter which contains all the prompts.
+        self.prompts = []  # Contains all the prompts
+        self.promptsPerPerson = 0  # How many prompts each player should give.
+
 
     def getPrompt(self, name):
         # The 'name' parameter is the name of the user.
 
         prompt = input(f"{name}, give me a prompt: ")  # Input asking for the prompt.
         self.prompts.append(prompt)  # Appends the prompt given by the user to the list of prompts for the game.
+
+    def setPromptsPerPerson(self):
+        self.promptsPerPerson = int(input("How many prompts should each player enter? "))
 
 
 # Class which will store + manage all information about a specific player.
@@ -273,8 +277,8 @@ class Game:
     def setup(self):
         # Links all the methods together. Uses procedural programming.
         self.setNumberOfPlayers()  # Sets the number of players in the game.
-        self.noRounds = self.NoPlayers * 2  # Ensures that everyone plays the same number of rounds.
 
+        # Setting up players
         for i in range(self.NoPlayers):
             player = Player()  # Instantiates a player as a player.
             players = self.players
@@ -282,13 +286,18 @@ class Game:
             self.players.append(player)  # Appends the player object to the list of players.
             print('\n')
 
+        # Setting up prompts
+        self.prompts.setPromptsPerPerson()  # Sets the number of prompts per person.
         for item in self.players:
-            self.prompts.getPrompt(item.name)  # Asks each player for a prompt.
+            for i in range(self.prompts.promptsPerPerson):
+                self.prompts.getPrompt(item.name)  # Gets the number of required prompts.
 
         print("\n")
 
         self.setPlaylist()  # Calls the method that will set the playlist.
         self.setNoSongsPerPerson()  # Calls the method which will set the number of songs per person.
+        self.noRounds = (self.NoPlayers * self.songsPerPerson) // 2  # Ensures that everyone plays the same number of
+        # rounds whilst still using up all their songs.
 
     def draft(self):
         # Where the main drafting process happens.
