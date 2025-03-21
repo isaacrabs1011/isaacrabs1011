@@ -469,6 +469,7 @@ class Game:
     def saveGame(self):  # Where all the saving happens.
         doYouSave = input("Do you want to save this game? (y/n) ")  # Asks the user if they want to save.
         doYouSave = doYouSave.lower()
+        print("\n")
 
         if doYouSave == 'y':
             print("The following will be saved: \n"  # Lists all the things being saved.

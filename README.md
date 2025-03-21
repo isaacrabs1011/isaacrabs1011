@@ -16,3 +16,5 @@ IMPORTANT NOTES:
 - Get audio samples of the songs for the chosen songs.
 - Might want to have loads of different prompts for the game and not all of them being selected.
 - High SCORE!!!!
+- Loads of validation
+- Upper bound of players
