@@ -273,8 +273,8 @@ class Game:
         self.playlistLink = playlistID  # Stores the playlist link so that it can be saved later.
         auth_manager = SpotifyClientCredentials(SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET)  # Authenticates my Spotify
         # Credentials using my Spotify Client ID and Client Secret.
-        sp = spotipy.Spotify(auth_manager=auth_manager)  # Create a Spotify API client using the authenticated session.
-        playlist = sp.playlist(playlistID)
+        isaac = spotipy.Spotify(auth_manager=auth_manager)  # Create a Spotify API client via the authenticated session.
+        playlist = isaac.playlist(playlistID)
         for item in playlist['tracks']['items']:  # Loop through each track item in the playlist
             track = item['track']  # Extract track details
             self.playlist.append(track['artists'][0]['name'] + ' - ' + track['name'])  # Print the first artist's
