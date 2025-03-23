@@ -18,3 +18,5 @@ IMPORTANT NOTES:
 - High SCORE!!!!
 - Loads of validation
 - Upper bound of players
+- There can accidentally be the same player twice in 1 game.
+- Validation to ensure that the playlist link is valid.
