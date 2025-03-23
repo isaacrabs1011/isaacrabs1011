@@ -216,16 +216,22 @@ class Game:
         self.playlistLink = ""  # The link to the Spotify playlist. Will be used when saving the game.
         self.prompts = Prompts()  # Prompts are stored in a separate class but can be accessed from within the game.
         self.songsPerPerson = 0  # The chosen amount of songs per person.
+        self.defaultPlaylistLink = "https://open.spotify.com/playlist/4oTJa6wvBtGwg2elxI2jq1?si=d17e37423fa04fbe"
 
     def setNoSongsPerPerson(self):
         # Sets the number of songs per person.
         print(f"Your playlist has {len(self.playlist)} songs.")  # Tells the user how many songs there are currently
         # in the playlist.
         print(f"There are {len(self.players)} players")  # Tells the user how many players there are in the game.
+        maxSongs = len(self.playlist) // len(self.players)
         print(
-            f"I recommend playing with 10 songs per person, but the maximum you can play with is {len(self.playlist) // len(self.players)}")
+            f"I recommend playing with 10 songs per person, but the maximum you can play with is {maxSongs}")
         self.songsPerPerson = int(input("How many songs do you want each person to have in their roster? "))  # Asks
         # the user how many songs they want each player to have in their roster.
+
+        while self.songsPerPerson > maxSongs:  # Checks that it isn't exceeding the MaxNumber Songs allowed per person.
+            print(f"You can't have more than {maxSongs} per person. You wanted {self.songsPerPerson}")
+            self.songsPerPerson = int(input("How many songs do you want each person to have in their roster? "))
 
         nOsongsInPlaylist = self.songsPerPerson * len(self.players)  # Local variable which will automatically
         # calculate how many songs there must be in the playlist to ensure that every player gets the same amount.
@@ -253,8 +259,17 @@ class Game:
         SPOTIPY_CLIENT_SECRET = '8466dcc0498847eabf4cc3b83b6a0742'  # My Spotify ClientSecret.
         SPOTIPY_REDIRECT_URI = 'http://localhost.callback'  # Would have been used for making the GUI.
 
-        playlistID = input("Go to your Spotify profile and choose one of your playlists. \nClick on the 3 dots and press share then Copy Link. \nPaste it here: ")
+        defaultOrCustom = input("Do you want to use the default Playlist or your own playlist?\nEnter 'd' for Default Playlist and any other button for Custom Playlist. ")
+        # Asks the user if they want to submit their own playlist or use a default one.
+        defaultOrCustom = defaultOrCustom.lower()
+
+        if defaultOrCustom == 'd':  # If they want the default one.
+            playlistID = self.defaultPlaylistLink  # Makes the playlistID the link to the default playlist.
+            print(f"FYI, here is the playlist link: {self.defaultPlaylistLink}")  # Displays it to the user.
+        else:
+            playlistID = input("Go to your Spotify profile and choose one of your playlists. \nClick on the 3 dots and press share then Copy Link. \nPaste it here: ")
         # This asks the user for the link to their desired Spotify Playlist.
+
         self.playlistLink = playlistID  # Stores the playlist link so that it can be saved later.
         auth_manager = SpotifyClientCredentials(SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET)  # Authenticates my Spotify
         # Credentials using my Spotify Client ID and Client Secret.
