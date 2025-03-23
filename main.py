@@ -571,3 +571,5 @@ if startGame == 'y':
     game.vote()  # Voting phase.
     game.decideWinner()  # Leaderboard phase.
     game.saveGame()  # Saves the game.
+
+# FINISH

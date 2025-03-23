@@ -16,7 +16,7 @@ if defaultOrCustom == 'd':
 else:
     playlistLink = input("Enter playlist Link: ")
 
-# SPOTIFY PLAYLIST EXTRACTS PLAYLIST
+# SPOTIFY API EXTRACTS PLAYLIST
 
 maxSongsPP = len(songs) // len(players)
 print(f"There are {len(songs)} songs in the playlist, and {len(players)} players.")
