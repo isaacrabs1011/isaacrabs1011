@@ -218,6 +218,25 @@ class Game:
         self.songsPerPerson = 0  # The chosen amount of songs per person.
         self.defaultPlaylistLink = "https://open.spotify.com/playlist/4oTJa6wvBtGwg2elxI2jq1?si=d17e37423fa04fbe"
 
+    def rearrangePlayers(self):
+        indexes = []
+        newPlayers = []
+        for i in range(0, self.NoPlayers):
+            indexes.append(i)
+
+        playerDictionary = {}
+        for player in self.players:
+            randomIndex = random.choice(indexes)
+            playerDictionary[player] = randomIndex
+            indexes.remove(randomIndex)
+
+        for i in range(0, self.NoPlayers):
+            for item in playerDictionary:
+                if playerDictionary[item] == i:
+                    newPlayers.append(item)
+
+        self.players = newPlayers
+
     def setNoSongsPerPerson(self):
         # Sets the number of songs per person.
         print(f"Your playlist has {len(self.playlist)} songs.")  # Tells the user how many songs there are currently
@@ -243,7 +262,6 @@ class Game:
         print("This is what your playlist looks like now:")
         time.sleep(1)  # Pauses the program for 1 second so that the game doesn't feel too fast-paced.
         self.displayPlaylist()  # Displays the updated playlist to the group of people.
-        self.noRounds = len(self.playlist) // self.NoPlayers
 
     def setNumberOfPlayers(self):
         self.NoPlayers = int(input("How many players are playing? "))
@@ -435,6 +453,17 @@ class Game:
 
             count1 += 2  # Both counts are incremented twice to move onto the next duo of players in the players list.
             count2 += 2
+
+            hasEveryonePlayed = []
+            targetRounds = self.players[0].rounds
+            for player in self.players:
+                if player.rounds == targetRounds:
+                    pass
+                else:
+                    hasEveryonePlayed.append(False)
+
+            if len(hasEveryonePlayed) == 0:
+                self.rearrangePlayers()
 
             if count2 > (self.NoPlayers - 1):  # If count2 exceeds the number of players, it will loop round to the
                 # beginning of the self.players list to either index 0 or index 1, depending on how much larger than

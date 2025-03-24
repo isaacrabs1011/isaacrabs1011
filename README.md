@@ -22,3 +22,4 @@ IMPORTANT NOTES:
 - Validation to ensure that the playlist link is valid.
 - Do it with albums?
 - Cover Image
+- The players who submitted the songs for the prompt should be hidden to avoid bias (to be fair if you've memorised who's got which songs it won't make much of a difference.
