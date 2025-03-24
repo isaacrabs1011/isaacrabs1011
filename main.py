@@ -489,7 +489,15 @@ class Game:
                 finished = True
 
     def decideWinner(self):
-        print("Now we need to determine the winner.") # Display message
+        for player in self.players:
+            if len(player.roster) > 0:
+                print(f"{player.name} still has a song left in their roster - but they can't play against anyone else.")
+                print(f"To compensate, they will receive an extra {self.NoPlayers // 2} points as they were the last "
+                      f"pick for the draft.")
+
+                player.score += self.NoPlayers // 2
+
+        print("Now we need to determine the winner.")  # Display message
         self.displayLeaderboard()  # Calls the displayLeaderboard function.
 
     def displayLeaderboard(self):  # Displays the leaderboard at the end of the game.
