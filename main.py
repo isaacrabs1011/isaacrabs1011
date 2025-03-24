@@ -218,24 +218,25 @@ class Game:
         self.songsPerPerson = 0  # The chosen amount of songs per person.
         self.defaultPlaylistLink = "https://open.spotify.com/playlist/4oTJa6wvBtGwg2elxI2jq1?si=d17e37423fa04fbe"
 
-    def rearrangePlayers(self):
-        indexes = []
-        newPlayers = []
-        for i in range(0, self.NoPlayers):
+    def rearrangePlayers(self):  # Rearranges the player list (will be explained later in the voting phase.)
+        indexes = []  # Creates a list containing all the possible indexes.
+        newPlayers = []  # Declares a list which will temporarily store all the players.
+        for i in range(0, self.NoPlayers):  # Adds all the indexes to the list.
             indexes.append(i)
 
         playerDictionary = {}
-        for player in self.players:
-            randomIndex = random.choice(indexes)
-            playerDictionary[player] = randomIndex
-            indexes.remove(randomIndex)
+        for player in self.players:  # Loops through the players.
+            randomIndex = random.choice(indexes)  # Randomly selects an index to assign to the current player.
+            playerDictionary[player] = randomIndex  # Assigns the index to the player.
+            indexes.remove(randomIndex)  # Removes the index from the list of possible indexes
 
+        # Organises the players based on their new indexes into the newPlayers list.
         for i in range(0, self.NoPlayers):
             for item in playerDictionary:
                 if playerDictionary[item] == i:
                     newPlayers.append(item)
 
-        self.players = newPlayers
+        self.players = newPlayers  # Permanently moves all the players back into the object.
 
     def setNoSongsPerPerson(self):
         # Sets the number of songs per person.
@@ -454,16 +455,25 @@ class Game:
             count1 += 2  # Both counts are incremented twice to move onto the next duo of players in the players list.
             count2 += 2
 
-            hasEveryonePlayed = []
-            targetRounds = self.players[0].rounds
-            for player in self.players:
+            # If everyone has played the same number of rounds and the game hasn't ended, it means that there's an even
+            # number of players, or there's enough songs in the playlist that everything loops back around.
+            # This would theoretically mean that there would be the same matchups happening more than once. To avoid
+            # this, the players list will be randomly rearranged, so that different matchups can occur.
+
+            hasEveryonePlayed = []  # Will contain values if not everyone has played the same amount.
+            targetRounds = self.players[0].rounds  # Chooses one of the players' number of rounds played (it doesn't
+            # matter who because if everyone has played the same number of rounds then theoretically anybody could
+            # have been chosen.)
+
+            for player in self.players:  # Loops through each player in the players list.
                 if player.rounds == targetRounds:
                     pass
                 else:
-                    hasEveryonePlayed.append(False)
+                    hasEveryonePlayed.append(False)  # If the player has played a different number of rounds then
+                    # 'False' is appended to the list.
 
-            if len(hasEveryonePlayed) == 0:
-                self.rearrangePlayers()
+            if len(hasEveryonePlayed) == 0:  # If everyone has played the same number of rounds...
+                self.rearrangePlayers()  # The players list is rearranged to ensure new matchups.
 
             if count2 > (self.NoPlayers - 1):  # If count2 exceeds the number of players, it will loop round to the
                 # beginning of the self.players list to either index 0 or index 1, depending on how much larger than
