@@ -45,12 +45,6 @@ CREATE TABLE IF NOT EXISTS prompts(
 """
 cursor.execute(create_prompts_table)
 
-# query = """SELECT Prompts.promptID, Prompts.promptText, Game.gameID AS game_id,
-#            FROM Prompts
-#            JOIN Game ON Prompts.gameId = Game.gameID;
-#            """
-
-
 create_playerGame_table = """
 CREATE TABLE IF NOT EXISTS playerGame(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -616,13 +610,10 @@ class Game:
 
             cursor.executemany(insertQueryPrompts, prompts)  # Executes all the prompts.
 
-            conn.commit()
-            conn.close()  # Finishes the amendments to the database.
-
 
 # main
 
-startGame = input("Do you want to start a new game? (y/n) ")  # Asks confirmation of the user to start the game.
+startGame = input("Do you want to start a new game? (y) ")  # Asks confirmation of the user to start the game.
 startGame = startGame.lower()  # simplifies it.
 
 if startGame == 'y':
@@ -633,4 +624,36 @@ if startGame == 'y':
     game.decideWinner()  # Leaderboard phase.
     game.saveGame()  # Saves the game.
 
+else:
+    extract = input("Do you want to view the information of a previous game? (y)")
+    extract = extract.lower()
+
+    if extract == 'y':
+        game = input("Which game do you want to view the info of? ")
+
+        find_statement = '''
+                    SELECT * FROM game
+                    WHERE game.gameID LIKE (?)
+                    '''
+
+        cursor.execute(find_statement, (game,))  # Will try to find this game in the database
+        result = cursor.fetchall()
+
+        while len(result) == 0:
+            print("This game doesn't exist.")
+            game = input("Which game do you want to view the info of? ")
+            cursor.execute(find_statement, (game,))
+            result = cursor.fetchall()
+
+        join_query = """
+        SELECT game.gameID, game.playlistLink, prompts.promptText
+        FROM game
+        INNER JOIN prompts ON game.gameID = prompts.gameId
+        WHERE game.gameID = (?);
+        """
+
+        conn.execute(join_query, game)
+
+conn.commit()
+conn.close()  # Finishes the amendments to the database.
 # FINISH
