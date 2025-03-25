@@ -1,6 +1,5 @@
 import random
 
-
 def rearrangePlayers(list):
     indexes = []
     newPlayers = []

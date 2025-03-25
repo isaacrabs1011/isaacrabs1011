@@ -217,6 +217,7 @@ class Game:
         self.prompts = Prompts()  # Prompts are stored in a separate class but can be accessed from within the game.
         self.songsPerPerson = 0  # The chosen amount of songs per person.
         self.defaultPlaylistLink = "https://open.spotify.com/playlist/4oTJa6wvBtGwg2elxI2jq1?si=d17e37423fa04fbe"
+        self.leaderboard = []
 
     def rearrangePlayers(self):  # Rearranges the player list (will be explained later in the voting phase.)
         indexes = []  # Creates a list containing all the possible indexes.
@@ -524,6 +525,8 @@ class Game:
 
         for i in range(self.NoPlayers):  # Displays the leaderboard.
             print(f"{i + 1}. {leaderboard[i].name}: {leaderboard[i].score}")
+
+        self.leaderboard = leaderboard
 
     def getPlaylist(self):
         return self.playlist
