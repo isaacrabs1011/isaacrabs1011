@@ -613,7 +613,8 @@ class Game:
 
 # main
 
-startGame = input("Do you want to start a new game? (y) ")  # Asks confirmation of the user to start the game.
+startGame = input("Do you want to start a new game? Type in 'y' to start a new game, and anything else to view previous"
+                  " games. ")  # Asks confirmation of the user to start the game or view info about previous games.
 startGame = startGame.lower()  # simplifies it.
 
 if startGame == 'y':
@@ -625,34 +626,66 @@ if startGame == 'y':
     game.saveGame()  # Saves the game.
 
 else:
-    extract = input("Do you want to view the information of a previous game? (y)")
+    # Asks the user if they want to view info regarding a previous game.
+    extract = input("Do you want to view the information of a previous game? Type 'y' if so, and anything else if no. ")
     extract = extract.lower()
 
     if extract == 'y':
-        game = input("Which game do you want to view the info of? ")
+        # Asks the user which game they want to view info about
+        game = int(input("Which game do you want to view the info of? "))
 
+        # Statement which will check to see if this game actually exists.
         find_statement = '''
                     SELECT * FROM game
                     WHERE game.gameID LIKE (?)
                     '''
 
         cursor.execute(find_statement, (game,))  # Will try to find this game in the database
-        result = cursor.fetchall()
+        result = cursor.fetchall() # Will fetch all the instances of the game.
 
-        while len(result) == 0:
-            print("This game doesn't exist.")
-            game = input("Which game do you want to view the info of? ")
-            cursor.execute(find_statement, (game,))
+        while len(result) == 0:  # If there's no such games
+            print("This game doesn't exist.")  # Display message
+            game = int(input("Which game do you want to view the info of? "))  # Asks the user again.
+            cursor.execute(find_statement, (game,))  # Does it again
             result = cursor.fetchall()
 
-        join_query = """
-        SELECT game.gameID, game.playlistLink, prompts.promptText
-        FROM game
-        INNER JOIN prompts ON game.gameID = prompts.gameId
-        WHERE game.gameID = (?);
+        # Query that will get the playerName and playerId of anyone who played in the specified game.
+        join_query_players = """
+        SELECT players.playerName, players.playerId
+        FROM players
+        INNER JOIN playerGame ON players.playerId = playerGame.playerID
+        WHERE playerGame.gameID = (?);
         """
 
-        conn.execute(join_query, game)
+        # Will get all the songs of the player of playerID who played in gameID.
+        join_query_roster = """
+        SELECT playerGameRoster.playerSong
+        FROM playerGameRoster
+        INNER JOIN players ON players.playerId = playerGameRoster.playerID
+        WHERE playerGameRoster.gameID = (?) AND playerGameRoster.playerID = (?);
+        """
+
+        cursor.execute(join_query_players, (game,))
+        results = cursor.fetchall()  # Gets a list of all the players who played in game GameID.
+
+        print(f"Here are all of the players that played in game {game}, and what their roster looked like:")
+        print()  # Whitespace to make it easier to read.
+        for item in results:  # Loops through every player who played in the game.
+            cursor.execute(join_query_roster, (game, item[1]))
+            # Uses the playerID extracted from the previous JOIN and the previously assigned gameID to execute another
+            # JOIN which will search for that player's songs in the playerGameRoster table where the gameID's match.
+            rosterResults = cursor.fetchall()  # Fetches all the songs for that player.
+
+            playerRoster = []  # Creates a list which will temporarily store all the songs in that player's roster.
+            for song in rosterResults:  # Loops through each song and adds it to the list.
+                playerRoster.append(song[0])
+
+            print(f"{item[0]}'s roster looked like this :")  # item[0] is the name of the current player.
+            print()
+            for i in range(len(playerRoster)):  # Displays the roster in a formatted matter.
+                print(f"{i+1}. {playerRoster[i]}")
+
+            print()
 
 conn.commit()
 conn.close()  # Finishes the amendments to the database.

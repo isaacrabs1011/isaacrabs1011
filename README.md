@@ -11,10 +11,8 @@ IMPORTANT NOTES:
 
 **Potential Future Modifications:**
 
-- Algorithm will automatically detect how many songs should be in a player's roster instead of having to ask the user.
 - When Saving the database could have to do something when 2 different people have the same name.
 - Get audio samples of the songs for the chosen songs.
-- Might want to have loads of different prompts for the game and not all of them being selected.
 - High SCORE!!!!
 - Loads of validation
 - Upper bound of players

@@ -51,3 +51,13 @@ cursor.executemany(insertQueryPlayers, players)
 conn.commit()
 conn.close()
 
+
+a = "hello"
+b = "goodbye"
+
+query = """
+INSERT INTO table (attribute1, attribute2)
+VALUES (?,?)
+"""
+
+cursor.execute(query, (a,b))
