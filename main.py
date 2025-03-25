@@ -5,8 +5,8 @@ from spotipy.oauth2 import SpotifyClientCredentials
 import sqlite3
 
 # Creating a cursor for my SQLite database.
-conn = sqlite3.connect('database.sqlite')
-cursor = conn.cursor()
+conn = sqlite3.connect('database.sqlite')  # Connects / creates an SQLite database.
+cursor = conn.cursor()  # Sets up the cursor to help store all of my data.
 
 # Creating and executing all the relevant tables for my database.
 # 1. It will check if the table already exists.
@@ -31,6 +31,9 @@ CREATE TABLE IF NOT EXISTS players (
 );
 """
 cursor.execute(create_players_table)
+
+# USE OF LINKED TABLES AND FOREIGN KEYS!
+# THE FOLLOWING 3 TABLES USE CROSS-TABLE SQL
 
 create_prompts_table = """
 CREATE TABLE IF NOT EXISTS prompts(
@@ -67,12 +70,14 @@ CREATE TABLE IF NOT EXISTS playerGameRoster(
 cursor.execute(create_playerGameRoster_table)
 
 
+# USE OF COMPLEX OOP!
+
+
 # Class which will store + manage all the prompts.
 class Prompts:
     def __init__(self):
         self.prompts = []  # Contains all the prompts
         self.promptsPerPerson = 0  # How many prompts each player should give.
-
 
     def getPrompt(self, name):
         # The 'name' parameter is the name of the user.
@@ -279,7 +284,8 @@ class Game:
         SPOTIPY_CLIENT_SECRET = '8466dcc0498847eabf4cc3b83b6a0742'  # My Spotify ClientSecret.
         SPOTIPY_REDIRECT_URI = 'http://localhost.callback'  # Would have been used for making the GUI.
 
-        defaultOrCustom = input("Do you want to use the default Playlist or your own playlist?\nEnter 'd' for Default Playlist and any other button for Custom Playlist. ")
+        defaultOrCustom = input("Do you want to use the default Playlist or your own playlist?"
+                                "\nEnter 'd' for Default Playlist and any other button for Custom Playlist. ")
         # Asks the user if they want to submit their own playlist or use a default one.
         defaultOrCustom = defaultOrCustom.lower()
 
@@ -287,12 +293,13 @@ class Game:
             playlistID = self.defaultPlaylistLink  # Makes the playlistID the link to the default playlist.
             print(f"FYI, here is the playlist link: {self.defaultPlaylistLink}")  # Displays it to the user.
         else:
-            playlistID = input("Go to your Spotify profile and choose one of your playlists. \nClick on the 3 dots and press share then Copy Link. \nPaste it here: ")
+            playlistID = input("Go to your Spotify profile and choose one of your playlists. "
+                               "\nClick on the 3 dots and press share then Copy Link. \nPaste it here: ")
         # This asks the user for the link to their desired Spotify Playlist.
 
         self.playlistLink = playlistID  # Stores the playlist link so that it can be saved later.
-        auth_manager = SpotifyClientCredentials(SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET)  # Authenticates my Spotify
-        # Credentials using my Spotify Client ID and Client Secret.
+        auth_manager = SpotifyClientCredentials(SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET)
+        # Authenticates my Spotify Credentials using my Spotify Client ID and Client Secret.
         isaac = spotipy.Spotify(auth_manager=auth_manager)  # Create a Spotify API client via the authenticated session.
         playlist = isaac.playlist(playlistID)
         for item in playlist['tracks']['items']:  # Loop through each track item in the playlist
@@ -528,9 +535,6 @@ class Game:
 
         self.leaderboard = leaderboard
 
-    def getPlaylist(self):
-        return self.playlist
-
     def turnPromptsSaveable(self, gameID):  # Will export the prompts in a format that can be stored in the SQL
         # Database.
         # The gameID is a parameter that will be given when saving the game.
@@ -557,9 +561,10 @@ class Game:
                   "   - Songs in the player's roster. \n"
                   )
 
+            # Parametrised SQL!!!
             insertQueryGame = """
                         INSERT INTO game (numberOfPlayers, playlistLink, rounds)
-                        VALUES  (?, ?, ?) 
+                        VALUES  (?, ?, ?)
             """
             # Initialises the insert query for the game table.
 
@@ -567,13 +572,13 @@ class Game:
 
             gameId = cursor.lastrowid  # Gets the game ID of this game so that it can be used to save other things.
 
-            # Query for players
+            # Query for players - MORE PARAMETRISED SQL!
             insertQueryPlayers = """
                         INSERT INTO players (playerName)
                         VALUES (?)
             """
 
-            # Query for game.
+            # Query for game - MORE PARAMETRISED SQL!
             insertQueryPlayerGame = """
                         INSERT INTO playerGame(gameID, playerID, playerScore)
                         VALUES (?,?,?)
