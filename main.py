@@ -45,6 +45,12 @@ CREATE TABLE IF NOT EXISTS prompts(
 """
 cursor.execute(create_prompts_table)
 
+# query = """SELECT Prompts.promptID, Prompts.promptText, Game.gameID AS game_id,
+#            FROM Prompts
+#            JOIN Game ON Prompts.gameId = Game.gameID;
+#            """
+
+
 create_playerGame_table = """
 CREATE TABLE IF NOT EXISTS playerGame(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
