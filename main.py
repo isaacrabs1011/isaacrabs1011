@@ -105,10 +105,10 @@ class Player:
         self.rounds = 0  # The number of rounds that the player has played. Modified during the voting stage.
         self.score = 0  # The score of the user.
 
-    def setupPlayer(self, players, playerId):
+    def setupPlayer(self, playerId):
         # This method sets up the entire player.
 
-        self.setName(players, playerId)  # Will set the name of the user by determining whether the user
+        self.setName(playerId)  # Will set the name of the user by determining whether the user
         # is already in the database.
 
         # self.setColour() - was created assuming the GUI would be made.
@@ -123,7 +123,7 @@ class Player:
     #         print("This name is already taken")
     #         return False
 
-    def setName(self, players, playerID):
+    def setName(self, playerID):
         # Will set the player's name.
         # PlayerID isn't the playerID in the database, it's their index in the
         # self.players attribute list in the Game Class.
@@ -137,26 +137,27 @@ class Player:
             self.playerExists = True  # It automatically assumes that the player already exists in the database.
             targetName = input("What name do you want to look for? ")
 
-            find_statement = '''
+            find_players = '''
             SELECT * FROM players
             WHERE playerName LIKE (?)
             '''
 
-            cursor.execute(find_statement, (targetName,))  # Will try to find whether this player actually exists.
-            result = cursor.fetchall()  # 'result' will store the number of players in the database which have the
-            # same name as the targetName. If 'result' is 0, it means the player doesn't exist in the database.
+            cursor.execute(find_players, (targetName,))  # Will try to find whether this player actually exists.
+            playersNames = cursor.fetchall()  # 'playersNames' will store the number of players in the database which
+            # have the same name as the targetName. If 'playersNames' is 0, it means the player doesn't exist in the
+            # database.
 
-            while len(result) == 0:  # Will loop around until the user enters a valid name.
+            while len(playersNames) == 0:  # Will loop around until the user enters a valid name.
                 print(f"There is no one in the database called {targetName}")  # Output message telling the user
                 # whether this name exists.
 
                 targetName = input("What name do you want to look for? ")
-                find_statement = '''
+                find_players = '''
                             SELECT * FROM players
                             WHERE playerName LIKE (?)
                             '''
-                cursor.execute(find_statement, (targetName,))
-                result = cursor.fetchall()
+                cursor.execute(find_players, (targetName,))
+                playersNames = cursor.fetchall()
 
             selectStatement = """
             SELECT playerId, playerName FROM players WHERE playerName LIKE (?);
@@ -173,6 +174,9 @@ class Player:
         else:
             self.name = input(f"Player {playerID}, enter your name... ")  # PlayerID (i.e. Player 1, Player 2) in the
             # local game itself not the database.
+            while self.name.isspace():  # If the name entered is just whitespace
+                print("Since you haven't entered a name, you need to try that again.")
+                self.name = input(f"Player {playerID}, enter your name... ")
 
             self.playerId = None  # Maintains the self.playerId as None as they don't exist in the database, meaning
             # that they won't have a playerId in the database which in turn means that they will need to be added to
@@ -271,12 +275,17 @@ class Game:
         self.displayPlaylist()  # Displays the updated playlist to the group of people.
 
     def setNumberOfPlayers(self):
-        self.NoPlayers = int(input("How many players are playing? "))
-        while self.NoPlayers < 3:  # It's impossible to have a game without 3 or more players. If Player 1 is playing
-            # against Player 2, who is voting for the song that best fits the prompt?
-            print("You have to have more than 3 players. ")
-            self.NoPlayers = int(input("How many players are playing? "))  # Loops until the user states that there
-            # are 3 or more players playing.
+        while True:
+            try:  # Will check to see if an error pops up.
+                self.NoPlayers = int(input("How many players are playing? "))
+                if self.NoPlayers < 3 or self.NoPlayers > 10:
+                    # It's impossible to have a game without 3 or more players. If Player 1 is playing against Player 2,
+                    # who is voting for the song that best fits the prompt?
+                    print("You have to have between 3-10 players. ")
+                else:
+                    break  # If it's a valid input then the loop will break
+            except ValueError:  # If the player has entered a string and not an integer it will keep trying.
+                print("You have to enter a number not text.")
 
     def setPlaylist(self):
         # Sets the playlist for the current game.
@@ -324,7 +333,7 @@ class Game:
         for i in range(self.NoPlayers):
             player = Player()  # Instantiates a player as a player.
             players = self.players
-            player.setupPlayer(players, i + 1)  # Sets up the player.
+            player.setupPlayer(i + 1)  # Sets up the player.
             self.players.append(player)  # Appends the player object to the list of players.
             print('\n')
 
@@ -671,8 +680,6 @@ else:
         print(f"Here are all of the players that played in game {game}, and what their roster looked like:")
         print()  # Whitespace to make it easier to read.
 
-        leaderboard = []
-
         for item in results:  # Loops through every player who played in the game.
             cursor.execute(join_query_roster, (game, item[1]))
             # Uses the playerID extracted from the previous JOIN and the previously assigned gameID to execute another
@@ -689,6 +696,8 @@ else:
                 print(f"{i+1}. {playerRoster[i]}")
 
             print()
+
+        leaderboard = []
 
         # Algorithm very similar to DisplayLeaderboard method in the Game class.
         for player in results:
@@ -707,7 +716,7 @@ else:
                     if player not in leaderboard:
                         leaderboard.append(player)
 
-        print(f"Here was the leaderboard for game {game}:")  # Displays the leaderboard
+        print(f"Here was the leaderboard for game {game}:")  # Displays the leaderboard for that game.
 
         for i in range(len(results)):
             print(f"{i + 1}. {leaderboard[i][0]}: {leaderboard[i][2]}")

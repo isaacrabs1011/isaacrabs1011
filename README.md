@@ -23,3 +23,4 @@ IMPORTANT NOTES:
 - The players who submitted the songs for the prompt should be hidden to avoid bias (to be fair if you've memorised who's got which songs it won't make much of a difference.
 - Have a game mode where the loser of a round gets to keep their score. 
 - Have AI bots that will play the game if you need an extra person.
+- Give the users the option to edit their playerNames
