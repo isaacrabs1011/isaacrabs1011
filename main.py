@@ -83,10 +83,23 @@ class Prompts:
         # The 'name' parameter is the name of the user.
 
         prompt = input(f"{name}, give me a prompt: ")  # Input asking for the prompt.
+        while prompt.isspace() or len(prompt) == 0:  # If the input is empty
+            print("You can't enter an empty prompt - I'm sure you can think of something! ")
+            prompt = input(f"{name}, give me a prompt: ")
         self.prompts.append(prompt)  # Appends the prompt given by the user to the list of prompts for the game.
 
     def setPromptsPerPerson(self):
-        self.promptsPerPerson = int(input("How many prompts should each player enter? "))
+        while True:
+            # Checks to see if the input is valid
+            try:
+                self.promptsPerPerson = int(input("How many prompts should each player enter? "))
+                if self.promptsPerPerson < 1 or self.promptsPerPerson > 10:
+                    print("You should have 1-10 prompts per person. ")
+                else:
+                    break
+
+            except ValueError:
+                print("You have to enter a number. ")
 
 
 # Class which will store + manage all information about a specific player.
@@ -174,7 +187,7 @@ class Player:
         else:
             self.name = input(f"Player {playerID}, enter your name... ")  # PlayerID (i.e. Player 1, Player 2) in the
             # local game itself not the database.
-            while self.name.isspace():  # If the name entered is just whitespace
+            while self.name.isspace() or len(self.name) == 0:  # If the name entered is just whitespace
                 print("Since you haven't entered a name, you need to try that again.")
                 self.name = input(f"Player {playerID}, enter your name... ")
 
@@ -203,9 +216,18 @@ class Player:
         print(f"{self.name}, choose one of your songs: \n")
         self.displayRoster()  # Reminds the user of what songs are in their roster.
 
-        songNumber = int(input(f"Pick a number, 1-{len(self.roster)} "))  # Asks for the position of their chosen
-        # song instead of the name of the song. This is to avoid being unable to select a song containing funky
-        # symbols or emojis or letters in another language.
+        while True:
+            try:
+                songNumber = int(input(f"Pick a number, 1-{len(self.roster)} "))
+                # Asks for the position of their chosen song instead of the name of the song. This is to avoid being
+                # unable to select a song containing funky symbols or emojis or letters in another language.
+                if songNumber > len(self.roster) or songNumber < 1:
+                    print(f"You have to choose a song 1-{len(self.roster)}")
+                else:
+                    break
+
+            except ValueError:
+                print("You need to enter a valid number. ")
 
         song = self.roster[songNumber - 1]  # The index in the list is going to be 1 smaller than the position shown
         # when the playlist is displayed.
@@ -256,12 +278,18 @@ class Game:
         maxSongs = len(self.playlist) // len(self.players)
         print(
             f"I recommend playing with 10 songs per person, but the maximum you can play with is {maxSongs}")
-        self.songsPerPerson = int(input("How many songs do you want each person to have in their roster? "))  # Asks
-        # the user how many songs they want each player to have in their roster.
 
-        while self.songsPerPerson > maxSongs:  # Checks that it isn't exceeding the MaxNumber Songs allowed per person.
-            print(f"You can't have more than {maxSongs} per person. You wanted {self.songsPerPerson}")
-            self.songsPerPerson = int(input("How many songs do you want each person to have in their roster? "))
+        while True:
+            try:
+                self.songsPerPerson = int(input("How many songs do you want each person to have in their roster? "))
+                # Asks the user how many songs they want each player to have in their roster.
+                if self.songsPerPerson > maxSongs or self.songsPerPerson < 1:
+                    print(f"You can't have more than {maxSongs} per person. You wanted {self.songsPerPerson}")
+                    # Checks to see if there's a valid number of songs.
+                else:
+                    break
+            except ValueError:
+                print("You entered a string value, you need to enter a number. ")
 
         nOsongsInPlaylist = self.songsPerPerson * len(self.players)  # Local variable which will automatically
         # calculate how many songs there must be in the playlist to ensure that every player gets the same amount.
@@ -291,7 +319,8 @@ class Game:
         # Sets the playlist for the current game.
         SPOTIPY_CLIENT_ID = '5143755320f74541986016c151d8b004'  # My Spotify ClientID.
         SPOTIPY_CLIENT_SECRET = '8466dcc0498847eabf4cc3b83b6a0742'  # My Spotify ClientSecret.
-        SPOTIPY_REDIRECT_URI = 'http://localhost.callback'  # Would have been used for making the GUI.
+        # SPOTIPY_REDIRECT_URI = 'http://localhost.callback'  # Would have been used for making the GUI.
+
 
         defaultOrCustom = input("Do you want to use the default Playlist or your own playlist?"
                                 "\nEnter 'd' for Default Playlist and any other button for Custom Playlist. ")
@@ -309,8 +338,23 @@ class Game:
         self.playlistLink = playlistID  # Stores the playlist link so that it can be saved later.
         auth_manager = SpotifyClientCredentials(SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET)
         # Authenticates my Spotify Credentials using my Spotify Client ID and Client Secret.
-        isaac = spotipy.Spotify(auth_manager=auth_manager)  # Create a Spotify API client via the authenticated session.
-        playlist = isaac.playlist(playlistID)
+        session = spotipy.Spotify(auth_manager=auth_manager)
+        # Create a Spotify API client via the authenticated session.
+
+        try:
+            playlist = session.playlist(playlistID)  # tries to extract the playlist from Spotify
+
+        except Exception as e:
+            print("You haven't entered a valid playlist link. ")
+            print(f"Error details: {e}")  # Displays the error to the user
+            print()
+            print("You will have to play with the default playlist. ")
+            # Tells the player they have to play with the default playlist instead of a custom one.
+            playlistID = self.defaultPlaylistLink
+            playlist = session.playlist(playlistID)
+            print(f"FYI, here is the playlist link: {self.defaultPlaylistLink}")
+            self.playlistLink = playlistID  # Saves the playlist link so that it can be saved.
+
         for item in playlist['tracks']['items']:  # Loop through each track item in the playlist
             track = item['track']  # Extract track details
             self.playlist.append(track['artists'][0]['name'] + ' - ' + track['name'])  # Print the first artist's
@@ -332,7 +376,6 @@ class Game:
         # Setting up players
         for i in range(self.NoPlayers):
             player = Player()  # Instantiates a player as a player.
-            players = self.players
             player.setupPlayer(i + 1)  # Sets up the player.
             self.players.append(player)  # Appends the player object to the list of players.
             print('\n')
@@ -366,8 +409,19 @@ class Game:
             # available to choose.
             print("\n")
 
-            songNumber = int(input(f"Pick a number 1-{len(self.playlist)} "))  # Display message.
-            song = self.playlist[songNumber - 1]
+            while True:
+                try:
+                    songNumber = int(input(f"Pick a number 1-{len(self.playlist)} "))  # Display message.
+                    if songNumber < 1 or songNumber > len(self.playlist):
+                        # Checks to see if the song is going to be in the playlist.
+                        print(f"You have to choose a song 1-{len(self.playlist)}.")
+
+                    else:
+                        break
+                except ValueError:  # Checks to see if a letter was in the input.
+                    print("You have to enter a valid NUMBER!! ")
+
+            song = self.playlist[songNumber - 1]  # Gets the song in the chosen index.
 
             self.players[currentPlayer].roster.append(song)  # Puts the chosen song into the current player's roster.
             self.players[currentPlayer].initialRoster.append(song)  # Adds it to the initial roster as well.
@@ -423,8 +477,18 @@ class Game:
             print("\n")
 
             for thing in restOfPlayers:  # Loops through the players not playing (i.e. the voters).
-                vote = int(input(f"{thing.name} pick a song, choose 1 or 2: "))  # Asks the voters to choose a song 1
-                # or 2.
+                while True:
+                    try:
+                        vote = int(input(f"{thing.name} pick a song, choose 1 or 2: "))
+                        # Asks the voters to choose a song 1 or 2.
+                        if vote < 1 or vote > 2:
+                            print("Choose a number 1-2. ")
+                        else:
+                            break
+
+                    except ValueError:
+                        print("Choose a valid number please. ")
+
                 if vote == 1:  # If the voter chooses Player 1's song, p1vote increments.
                     p1vote += 1
 
@@ -480,7 +544,7 @@ class Game:
             hasEveryonePlayed = []  # Will contain values if not everyone has played the same amount.
             targetRounds = self.players[0].rounds  # Chooses one of the players' number of rounds played (it doesn't
             # matter who because if everyone has played the same number of rounds then theoretically anybody could
-            # have been chosen.)
+            # have been chosen).
 
             for player in self.players:  # Loops through each player in the players list.
                 if player.rounds == targetRounds:
@@ -544,7 +608,7 @@ class Game:
 
         self.leaderboard = leaderboard
 
-    def turnPromptsSaveable(self, gameID):  # Will export the prompts in a format that can be stored in the SQL
+    def turnPromptsSavable(self, gameID):  # Will export the prompts in a format that can be stored in the SQL
         # Database.
         # The gameID is a parameter that will be given when saving the game.
         prompts = []
@@ -615,7 +679,7 @@ class Game:
                         VALUES (?, ?)
                         """
 
-            prompts = self.turnPromptsSaveable(gameId)  # Turns the prompts into a savable format.
+            prompts = self.turnPromptsSavable(gameId)  # Turns the prompts into a savable format.
 
             cursor.executemany(insertQueryPrompts, prompts)  # Executes all the prompts.
 
@@ -650,7 +714,7 @@ else:
                     '''
 
         cursor.execute(find_statement, (game,))  # Will try to find this game in the database
-        result = cursor.fetchall() # Will fetch all the instances of the game.
+        result = cursor.fetchall()  # Will fetch all the instances of the game.
 
         while len(result) == 0:  # If there's no such games
             print("This game doesn't exist.")  # Display message
