@@ -651,7 +651,7 @@ else:
 
         # Query that will get the playerName and playerId of anyone who played in the specified game.
         join_query_players = """
-        SELECT players.playerName, players.playerId
+        SELECT players.playerName, players.playerId, playerGame.playerScore
         FROM players
         INNER JOIN playerGame ON players.playerId = playerGame.playerID
         WHERE playerGame.gameID = (?);
@@ -670,6 +670,9 @@ else:
 
         print(f"Here are all of the players that played in game {game}, and what their roster looked like:")
         print()  # Whitespace to make it easier to read.
+
+        leaderboard = []
+
         for item in results:  # Loops through every player who played in the game.
             cursor.execute(join_query_roster, (game, item[1]))
             # Uses the playerID extracted from the previous JOIN and the previously assigned gameID to execute another
@@ -686,6 +689,28 @@ else:
                 print(f"{i+1}. {playerRoster[i]}")
 
             print()
+
+        for player in results:
+            if len(leaderboard) == 0:  # If no one's in the leaderboard yet the player is added for the time being.
+                leaderboard.append(player)
+
+            else:
+                count = 0
+                while count < len(leaderboard) and player not in leaderboard:
+                    if player[2] > leaderboard[count][2]:
+                        leaderboard.insert(count, player)
+
+                    else:
+                        count += 1
+
+                    if player not in leaderboard:
+                        leaderboard.append(player)
+
+        print(f"Here was the leaderboard for game {game}:")
+
+        for i in range(len(results)):
+            print(f"{i + 1}. {leaderboard[i][0]}: {leaderboard[i][2]}")
+
 
 conn.commit()
 conn.close()  # Finishes the amendments to the database.
