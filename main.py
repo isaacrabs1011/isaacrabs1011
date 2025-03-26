@@ -649,7 +649,7 @@ else:
             cursor.execute(find_statement, (game,))  # Does it again
             result = cursor.fetchall()
 
-        # Query that will get the playerName and playerId of anyone who played in the specified game.
+        # Query that will get the playerName playerId and score of anyone who played in the specified game.
         join_query_players = """
         SELECT players.playerName, players.playerId, playerGame.playerScore
         FROM players
@@ -690,8 +690,9 @@ else:
 
             print()
 
+        # Algorithm very similar to DisplayLeaderboard method in the Game class.
         for player in results:
-            if len(leaderboard) == 0:  # If no one's in the leaderboard yet the player is added for the time being.
+            if len(leaderboard) == 0:
                 leaderboard.append(player)
 
             else:
@@ -706,7 +707,7 @@ else:
                     if player not in leaderboard:
                         leaderboard.append(player)
 
-        print(f"Here was the leaderboard for game {game}:")
+        print(f"Here was the leaderboard for game {game}:")  # Displays the leaderboard
 
         for i in range(len(results)):
             print(f"{i + 1}. {leaderboard[i][0]}: {leaderboard[i][2]}")
