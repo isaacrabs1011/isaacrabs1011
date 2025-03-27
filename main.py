@@ -321,7 +321,6 @@ class Game:
         SPOTIPY_CLIENT_SECRET = '8466dcc0498847eabf4cc3b83b6a0742'  # My Spotify ClientSecret.
         # SPOTIPY_REDIRECT_URI = 'http://localhost.callback'  # Would have been used for making the GUI.
 
-
         defaultOrCustom = input("Do you want to use the default Playlist or your own playlist?"
                                 "\nEnter 'd' for Default Playlist and any other button for Custom Playlist. ")
         # Asks the user if they want to submit their own playlist or use a default one.
